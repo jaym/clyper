@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -203,7 +204,7 @@ func (p *Preprocessor) processFile(inputFilePath string, outputDir string, seaso
 
 	// Write the episode metadata to a file
 	episodeMetadataKey := fmt.Sprintf("internal/%s/%s", epKey, EpisodeMetadataFilename)
-	episodeMetadataPath := fmt.Sprintf("%s/%s", outputDir, episodeMetadataKey)
+	episodeMetadataPath := path.Join(outputDir, episodeMetadataKey)
 
 	// Check if the episode has already been processed
 	if _, err := os.Stat(episodeMetadataPath); err == nil {
@@ -223,7 +224,7 @@ func (p *Preprocessor) processFile(inputFilePath string, outputDir string, seaso
 	}
 
 	downscaleOutputKey := fmt.Sprintf("internal/%s/downscale_%d_%d.mkv", epKey, p.config.Downscaler.Width, p.config.Downscaler.Height)
-	downscaleOutputPath := fmt.Sprintf("%s/%s", outputDir, downscaleOutputKey)
+	downscaleOutputPath := path.Join(outputDir, downscaleOutputKey)
 
 	input := ffmpeg_go.Input(inputFilePath)
 	downscaleFilter := input.Filter("scale", ffmpeg_go.Args{fmt.Sprintf("%d:%d", p.config.Downscaler.Width, p.config.Downscaler.Height)})
@@ -247,15 +248,15 @@ func (p *Preprocessor) processFile(inputFilePath string, outputDir string, seaso
 			fmt.Sprintf("%d:%d", p.config.Thumbnailer.Width, p.config.Thumbnailer.Height),
 		},
 	).Output(
-		fmt.Sprintf("%s/public/%s/_thumb_%%08d.jpg", outputDir, epKey),
+		path.Join(outputDir, fmt.Sprintf("public/%s/_thumb_%%08d.jpg", epKey)),
 		ffmpeg_go.KwArgs{
 			"q:v": "1",
 		},
 	)
 
 	subtitlesOutputKey := fmt.Sprintf("internal/%s/subtitles.srt", epKey)
-	subtitlesOutputPath := fmt.Sprintf("%s/%s", outputDir, subtitlesOutputKey)
-	subtitlesOutput := input.Get(fmt.Sprintf("0:%d", subtitlesStream)).Output(subtitlesOutputPath)
+	subtitlesOutputPath := path.Join(outputDir, subtitlesOutputKey)
+	subtitlesOutput := input.Get(fmt.Sprintf("%d", subtitlesStream)).Output(subtitlesOutputPath)
 
 	err = ffmpeg_go.MergeOutputs(downscaleOutput, thumbnailsOutput, subtitlesOutput).OverWriteOutput().ErrorToStdOut().Run()
 	if err != nil {
@@ -265,7 +266,8 @@ func (p *Preprocessor) processFile(inputFilePath string, outputDir string, seaso
 	}
 
 	// Rename the thumbnails to include the timestamp and remove the leading underscore
-	files, err := os.ReadDir(fmt.Sprintf("%s/public/%s", outputDir, epKey))
+	thumbDir := fmt.Sprintf("%s/public/%s", outputDir, epKey)
+	files, err := os.ReadDir(thumbDir)
 	if err != nil {
 		return fmt.Errorf("error listing files in output directory: %v", err)
 	}
@@ -287,11 +289,11 @@ func (p *Preprocessor) processFile(inputFilePath string, outputDir string, seaso
 			// Rename the files to include the timestamp and remove the leading underscore
 			ts := (iFrameNum / p.config.Thumbnailer.FramesPerSecond) * 1000
 			key := fmt.Sprintf("public/%s/thumb_%08d.jpg", epKey, ts)
-			newName := fmt.Sprintf("%s/%s", outputDir, key)
+			newName := path.Join(outputDir, key)
 
 			log.Info().Str("old", file.Name()).Str("new", key).Msg("renaming thumbnail")
 
-			err = os.Rename(fmt.Sprintf("%s/%s", outputDir, file.Name()), newName)
+			err = os.Rename(path.Join(thumbDir, file.Name()), newName)
 			if err != nil {
 				return fmt.Errorf("error renaming file: %v", err)
 			}
