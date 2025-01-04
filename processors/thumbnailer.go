@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const DefaultFramesPerSecond = 5
+
 type Thumbnailer struct {
 	// framesPerSecond is the rate at which frames are extracted from the video
 	framesPerSecond int
@@ -30,7 +32,7 @@ type ThumbnailerConfig struct {
 func NewThumbnailer(cfg ThumbnailerConfig) *Thumbnailer {
 	width := -1
 	height := -1
-	framesPerSecond := 1
+	framesPerSecond := DefaultFramesPerSecond
 	if cfg.Width > 0 {
 		width = cfg.Width
 	}

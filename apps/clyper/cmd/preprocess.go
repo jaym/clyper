@@ -73,7 +73,7 @@ var run = &cobra.Command{
 				Width: 640,
 			},
 			Thumbnailer: &processor.ThumbnailerConfig{
-				Width: 320,
+				Width: 160,
 			},
 			SubtitleExtractor: &processor.SubtitleExtractorConfig{},
 		})
