@@ -47,11 +47,11 @@ func OpenDatabase(dbPath string) (*Database, error) {
 }
 
 type SearchResult struct {
-	Season  int
-	Episode int
-	Start   int
-	End     int
-	Text    string
+	Season  int    `json:"season"`
+	Episode int    `json:"episode"`
+	Start   int    `json:"start"`
+	End     int    `json:"end"`
+	Text    string `json:"text"`
 }
 
 func (d *Database) Search(ctx context.Context, queryString string) ([]SearchResult, error) {

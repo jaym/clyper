@@ -52,6 +52,9 @@ func (h *ApiHandler) searchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to search", http.StatusInternalServerError)
 		return
 	}
+	if len(results) == 0 {
+		results = []metadata.SearchResult{}
+	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(results)
 }
@@ -249,6 +252,8 @@ func (h *ApiHandler) gifHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Serve the GIF
 	w.Header().Set("Content-Type", "image/gif")
+	// Cache the gif for 1 day
+	w.Header().Set("Cache-Control", "public, max-age=86400")
 	w.WriteHeader(http.StatusOK)
 	io.Copy(w, gif)
 }
