@@ -7,7 +7,7 @@ in
   env.GREET = "clyper devenv";
 
   # https://devenv.sh/packages/
-  packages = [ pkgs.git ];
+  packages = [ pkgs.git pkgs.ffmpeg ];
 
   languages = {
     go = {
