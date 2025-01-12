@@ -16,6 +16,7 @@ in
   packages = [
     pkgs.git
     pkgs.ffmpeg
+    pkgs.curl
   ];
 
   languages = {
@@ -69,16 +70,42 @@ in
       00:00:08,000 --> 00:00:10,000
       End of the video.
       EOL
-      ffmpeg -i $TMPFPATH -vf subtitles=$SUBTITLE_FILE $FPATH
+      ffmpeg -i $TMPFPATH -i $SUBTITLE_FILE -c:v copy -c:s mov_text -metadata:s:s:0 language=eng $FPATH
       rm $TMPFPATH
       rm $SUBTITLE_FILE
     '';
 
+  # preprocess the videos
+  scripts.generate-test-preprocessed.exec = ''
+    go run --tags fts5 ./apps/clyper preprocess run testing/samplevideo testing/samplevideo-output
+  '';
+
+  # start the backend api server
   scripts.backend.exec = ''
     go run --tags fts5 ./apps/clyper serve \
-      --objstore ./testing/output2 \
-      --fonts-dir ./testing/fonts \
-      --font-name Freight
+      --objstore ./testing/samplevideo-output
+  '';
+
+  # Download thumbnail for S01E01 at timestamp 10ms
+  scripts.sample-thumb.exec = ''
+    curl 'localhost:8991/thumb/1/1/10' > sample-thumb.jpg
+  '';
+
+  # list nearby thumbnails of S01E01 at timestamp 10ms
+  scripts.list-thumbs.exec = ''
+    curl 'localhost:8991/thumbs/1/1/10' > sample-thumb.jpg
+  '';
+
+  # search for subs
+  scripts.search.exec = ''
+    curl 'localhost:8991/search?q="yellow"'
+    curl 'localhost:8991/search?q="red"'
+    curl 'localhost:8991/search?q="blue"'
+  '';
+
+  # get a gif
+  scripts.make-gif.exec = ''
+    curl 'http://localhost:8991/gif/1/1/1500/3000.gif?text=hello' > sample.gif
   '';
 
   enterShell = ''
