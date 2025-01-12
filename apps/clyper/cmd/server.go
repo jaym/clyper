@@ -39,8 +39,8 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 
 	serveCmd.Flags().String("addr", ":8991", "address to listen on")
+	serveCmd.Flags().String("objstore", "/data", "path to the object store")
 	serveCmd.Flags().String("db", "internal/metadata.db", "path to the database")
-	serveCmd.Flags().String("objstore", "objstore", "path to the object store")
 	serveCmd.Flags().String("fonts-dir", "", "path to the fonts directory")
 	serveCmd.Flags().String("font-name", "", "default font name")
 
