@@ -1,0 +1,20 @@
+1
+00:00:00,000 --> 00:00:02,000
+This is the red segment.
+
+2
+00:00:02,000 --> 00:00:04,000
+This is the green segment.
+
+3
+00:00:04,000 --> 00:00:06,000
+This is the blue segment.
+
+4
+00:00:06,000 --> 00:00:08,000
+This is the yellow segment.
+
+5
+00:00:08,000 --> 00:00:10,000
+End of the video.
+
