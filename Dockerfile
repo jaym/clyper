@@ -26,4 +26,4 @@ RUN apk add --no-cache ffmpeg
 COPY --from=builder /app/clyper /usr/local/bin/clyper
 
 # Command to run the executable
-ENTRYPOINT ["clyper serve"]
+ENTRYPOINT ["clyper", "serve"]
