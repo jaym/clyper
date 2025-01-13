@@ -17,7 +17,7 @@ COPY . .
 RUN go build --tags fts5 -o clyper ./apps/clyper
 
 # Start a new stage from scratch
-FROM alpine:latest
+FROM debian:buster-slim
 
 # Install ffmpeg
 RUN apk add --no-cache ffmpeg
@@ -25,5 +25,6 @@ RUN apk add --no-cache ffmpeg
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/clyper /clyper
 
+EXPOSE 8991
 # Command to run the executable
 ENTRYPOINT ["/clyper", "serve"]
