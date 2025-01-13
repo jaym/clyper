@@ -14,10 +14,10 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build --tags fts5 -o clyper ./apps/clyper/cmd
+RUN go build --tags fts5 -o clyper ./apps/clyper
 
 # Start a new stage from scratch
-FROM alpine:latest  
+FROM alpine:latest
 
 # Install ffmpeg
 RUN apk add --no-cache ffmpeg
