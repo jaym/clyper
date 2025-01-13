@@ -14,10 +14,10 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build --tags fts5 -o clyper ./apps/clyper
+RUN CGO_ENABLED=1 GOOS=linux go build --tags fts5 -o clyper -a -ldflags '-linkmode external -extldflags "-static"' ./apps/clyper
 
 # Start a new stage from scratch
-FROM debian:buster-slim
+FROM alpine:latest
 
 # Install ffmpeg
 RUN apk add --no-cache ffmpeg
