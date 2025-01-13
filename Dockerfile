@@ -23,7 +23,7 @@ FROM alpine:latest
 RUN apk add --no-cache ffmpeg
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/clyper /usr/local/bin/clyper
+COPY --from=builder /app/clyper /clyper
 
 # Command to run the executable
-ENTRYPOINT ["clyper", "serve"]
+ENTRYPOINT ["/clyper", "serve"]
